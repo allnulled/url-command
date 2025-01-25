@@ -30,6 +30,9 @@ describe("URLCommand API Test", function (it) {
         const msg = "bye, " + name;
         return msg;
       },
+      fail: (urlParams) => {
+        throw new Error(urlParams.error || "Error message not specified");
+      }
     }
   };
 
@@ -48,6 +51,8 @@ describe("URLCommand API Test", function (it) {
     ["/commands/bye?argumentsOrder=a", 'bye, Emily', { a: "Emily" }],
     // Spread function call (implicit): must have numbers, from 0 untill the last parameter, and nothing else, and it will spread the parameters.
     ["/maths/sumatory?0=0&1=100&2=200&3=300", 600],
+    // Spread function call (implicit): must have numbers, from 0 untill the last parameter, and nothing else, and it will spread the parameters.
+    ["/commands/fail?error=It is okay, it have to return -315.36", -315.36],
   ];
 
   let counterBef = 0;
@@ -60,10 +65,12 @@ describe("URLCommand API Test", function (it) {
       const urlcommand = URLCommand.from(handlers);
       urlcommand.beforeRun(increaseBef);
       urlcommand.afterRun(increaseAft);
+      urlcommand.onError(() => -315.36);
       const output = urlcommand.run(url, args);
       console.log("      output:", output);
       ensure({ output }).is(result);
-      ensure({ comparison: counterBef === counterAft }).is(true);
+      // El OR es para el caso en que falla, que no llama al afterRun sino al onError:
+      ensure({ comparison: counterBef === counterAft || (counterBef - 1) === counterAft }).is(true);
       ensure({ counterBef }).isnt(0);
     });
   }

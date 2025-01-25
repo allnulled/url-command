@@ -30,16 +30,27 @@
     from: function (handlers) {
       let beforeRun = undefined;
       let afterRun = undefined;
+      let onError = undefined;
       const onRun = function(callback, args) {
-        let output = undefined;
-        if(typeof beforeRun === "function") {
-          beforeRun(...args);
+        try {
+          let output = undefined;
+          if(typeof beforeRun === "function") {
+            beforeRun(...args);
+          }
+          output = callback(...args);
+          if(typeof afterRun === "function") {
+            afterRun(...args);
+          }
+          return output;
+        } catch (error) {
+          if(typeof onError === "function") {
+            const output = onError(error);
+            if(typeof output !== "undefined") {
+              return output;
+            }
+          }
+          throw error;
         }
-        output = callback(...args);
-        if(typeof afterRun === "function") {
-          afterRun(...args);
-        }
-        return output;
       };
       const command = (url, queryParamsExtender = {}) => {
         if (!url) throw new Error("URL is required");
@@ -89,6 +100,12 @@
           throw new Error("Required parameter «callback» to be a function on «afterRun»");
         }
         afterRun = callback;
+      };
+      command.onError = function(callback) {
+        if(typeof callback !== "function") {
+          throw new Error("Required parameter «callback» to be a function on «onError»");
+        }
+        onError = callback;
       };
       return command;
     }
