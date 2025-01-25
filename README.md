@@ -88,7 +88,11 @@ describe("URLCommand API Test", function (it) {
       message(emitter, receiver, contents) {
         const msg = `${emitter} says to ${receiver}: "${contents}"`;
         return msg;
-      }
+      },
+      bye: (name) => {
+        const msg = "bye, " + name;
+        return msg;
+      },
     }
   };
 
@@ -98,12 +102,13 @@ describe("URLCommand API Test", function (it) {
     ["/maths/multiply?a=10&b=2", 20],
     ["/maths/sumatory?a=40&b=7&c=2&d=1&argumentsOrder=a,b,c,d", 50],
     ["/commands/message?a=origin&b=destination&c=This is a request&argumentsOrder=a,b,c", 'origin says to destination: "This is a request"'],
+    ["/commands/bye?argumentsOrder=a", 'bye, Emily', { a: "Emily" }],
   ];
 
   for (let index = 0; index < urls.length; index++) {
-    const [url, result] = urls[index];
+    const [url, result, args = {}] = urls[index];
     it("Can run: " + url, function () {
-      const output = URLCommand.from(handlers).run(url);
+      const output = URLCommand.from(handlers).run(url, args);
       ensure({ output }).is(result);
     });
   }
