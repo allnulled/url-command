@@ -31,6 +31,16 @@
         if (typeof currentHandler !== "function") {
           throw new Error(`Handler at path "${path}" is not a function`);
         }
+        if(queryParams.argumentsOrder) {
+          const args = [];
+          const argKeys = queryParams.argumentsOrder.split(",").map(arg => arg.trim());
+          for(let index=0; index<argKeys.length; index++) {
+            const argKey = argKeys[index];
+            const argValue = queryParams[argKey] || null;
+            args.push(argValue);
+          }
+          return currentHandler(...args);
+        }
         return currentHandler(queryParams);
       };
       command.run = command;

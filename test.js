@@ -1,28 +1,37 @@
 require(__dirname + "/url-command.js")
 
-// Ejemplo de uso
-const handlers = {
-  sum: ({ a, b }) => parseFloat(a) + parseFloat(b),
-  maths: {
-    multiply: ({ a, b }) => parseFloat(a) * parseFloat(b),
-  },
-  commands: {
-    hello: (urlParams) => {
-      const { name } = urlParams;
-      const msg = "hello, " + name;
-      console.log(msg);
-      return msg;
-    }
-  }
-};
-
-const urls = [
-  ["/commands/hello?name=world", "hello, world"],
-  ["/sum?a=10&b=2", 12],
-  ["/maths/multiply?a=10&b=2", 20],
-];
-
 describe("URLCommand API Test", function (it) {
+  // Ejemplo de uso
+  const handlers = {
+    sum: ({ a, b }) => parseFloat(a) + parseFloat(b),
+    maths: {
+      multiply: ({ a, b }) => parseFloat(a) * parseFloat(b),
+      sumatory: (...args) => {
+        let out = 0;
+        for(let index=0; index<args.length; index++) {
+          const arg = args[index];
+          out += parseFloat(arg);
+        }
+        return out;
+      }
+    },
+    commands: {
+      hello: (urlParams) => {
+        const { name } = urlParams;
+        const msg = "hello, " + name;
+        console.log(msg);
+        return msg;
+      }
+    }
+  };
+
+  const urls = [
+    ["/commands/hello?name=world", "hello, world"],
+    ["/sum?a=10&b=2", 12],
+    ["/maths/multiply?a=10&b=2", 20],
+    ["/maths/sumatory?a=40&b=7&c=2&d=1&argumentsOrder=a,b,c,d", 50],
+  ];
+
   for (let index = 0; index < urls.length; index++) {
     const [url, result] = urls[index];
     it("Can run: " + url, function () {
@@ -31,4 +40,3 @@ describe("URLCommand API Test", function (it) {
     });
   }
 });
-
