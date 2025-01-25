@@ -24,13 +24,25 @@ In html:
 
 ## API
 
+**1. Create an instance**
+
 Use `URLCommand.from(object)` to create an instance.
 
-Then use `urlcommand.run(text)` to run commands by URL.
-  - It will call the function passing 1 object only, containing the parameters provided on `run`.
+**2. Run commands**
 
-You can use `?...&argumentsOrder=a,b,c,d` to call functions using all the parameters.
-  - It will call the function spreading the specified properties in the specified order.
+Then use `urlcommand.run(text)` to run commands by URL.
+
+It will call the function passing 1 object only, containing the parameters provided on `run`.
+
+**3. Run functions**
+
+You can use the parameter `?...&argumentsOrder=a,b,c,d` to call functions using all the parameters allowed by JavaScript.
+
+It will call the function spreading the specified properties in the specified order.
+
+**4. Pass data too**
+
+Apart from the querystring parameters, you can pass data, like objects and functions and whatever.
 
 ## Usage
 

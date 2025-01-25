@@ -12,7 +12,7 @@
 })(function () {
   return {
     from: function (handlers) {
-      const command = (url) => {
+      const command = (url, queryParamsExtender = {}) => {
         if (!url) throw new Error("URL is required");
         if (typeof url !== "string") throw new Error("URL must be a string");
         if (typeof handlers !== "object" || handlers === null) {
@@ -20,6 +20,7 @@
         }
         const [path, queryString] = url.split("?");
         const queryParams = queryString ? Object.fromEntries(new URLSearchParams(queryString).entries()) : {};
+        Object.assign(queryParams, queryParamsExtender);
         const pathParts = path.split("/").filter(Boolean);
         let currentHandler = handlers;
         for (const part of pathParts) {

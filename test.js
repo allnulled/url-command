@@ -19,7 +19,10 @@ describe("URLCommand API Test", function (it) {
       hello: (urlParams) => {
         const { name } = urlParams;
         const msg = "hello, " + name;
-        console.log(msg);
+        return msg;
+      },
+      message(emitter, receiver, contents) {
+        const msg = `${emitter} says to ${receiver}: "${contents}"`;
         return msg;
       }
     }
@@ -30,6 +33,7 @@ describe("URLCommand API Test", function (it) {
     ["/sum?a=10&b=2", 12],
     ["/maths/multiply?a=10&b=2", 20],
     ["/maths/sumatory?a=40&b=7&c=2&d=1&argumentsOrder=a,b,c,d", 50],
+    ["/commands/message?a=origin&b=destination&c=This is a request&argumentsOrder=a,b,c", 'origin says to destination: "This is a request"'],
   ];
 
   for (let index = 0; index < urls.length; index++) {
