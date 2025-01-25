@@ -10,6 +10,22 @@
     module.exports = mod;
   }
 })(function () {
+  const isOnlyConsecutiveNumbers = function(queryParams) {
+    const queryKeysSource = Object.keys(queryParams);
+    const queryKeys = queryKeysSource.map(key => "" + key);
+    const output = [];
+    for(let index=0; index<queryKeys.length; index++) {
+      if(queryKeys.indexOf("" + index) === -1) {
+        return false;
+      }
+      if(queryParams[index]) {
+        output.push(queryParams[index]);
+      } else {
+        output.push(queryParams["" + index]);
+      }
+    }
+    return output;
+  };
   return {
     from: function (handlers) {
       const command = (url, queryParamsExtender = {}) => {
@@ -32,7 +48,10 @@
         if (typeof currentHandler !== "function") {
           throw new Error(`Handler at path "${path}" is not a function`);
         }
-        if(queryParams.argumentsOrder) {
+        const isSpreadable = isOnlyConsecutiveNumbers(queryParams);
+        if(isSpreadable && isSpreadable.length) {
+          return currentHandler(...isSpreadable);
+        } else if(queryParams.argumentsOrder) {
           const args = [];
           const argKeys = queryParams.argumentsOrder.split(",").map(arg => arg.trim());
           for(let index=0; index<argKeys.length; index++) {
@@ -41,8 +60,9 @@
             args.push(argValue);
           }
           return currentHandler(...args);
+        } else {
+          return currentHandler(queryParams);
         }
-        return currentHandler(queryParams);
       };
       command.run = command;
       return command;
