@@ -1,10 +1,11 @@
 {
   "name": "@allnulled/url-command",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Call functions through URL + Object.",
   "main": "url-command.js",
   "scripts": {
-    "test": "npx universal-tester test.js"
+    "test": "npx universal-tester test.js",
+    "versionate": "bash versionate.sh"
   },
   "keywords": [],
   "author": "allnulled",

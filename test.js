@@ -50,12 +50,21 @@ describe("URLCommand API Test", function (it) {
     ["/maths/sumatory?0=0&1=100&2=200&3=300", 600],
   ];
 
+  let counterBef = 0;
+  let counterAft = 0;
+  const increaseBef = () => counterBef++;
+  const increaseAft = () => counterAft++;
   for (let index = 0; index < urls.length; index++) {
     const [url, result, args = {}] = urls[index];
-    it("Can run: " + url, function () {
-      const output = URLCommand.from(handlers).run(url, args);
-      // console.log(output);
+    it("Can run: " + url, async function () {
+      const urlcommand = URLCommand.from(handlers);
+      urlcommand.beforeRun(increaseBef);
+      urlcommand.afterRun(increaseAft);
+      const output = urlcommand.run(url, args);
+      console.log("      output:", output);
       ensure({ output }).is(result);
+      ensure({ comparison: counterBef === counterAft }).is(true);
+      ensure({ counterBef }).isnt(0);
     });
   }
 });

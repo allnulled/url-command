@@ -36,7 +36,17 @@ It will call the function passing 1 object only, containing the parameters provi
 
 **3. Run functions**
 
-You can use the parameter `?...&argumentsOrder=a,b,c,d` to call functions using all the parameters allowed by JavaScript.
+Functions can have their own use cases of their own parameters, and this is about JavaScript. 
+
+You have 2 options.
+
+**Option 1: numerical properties**
+
+If you only pass numbers from 0 to whatever as keys, like `?0=hello&1=world&2=!`, it will call `fn("hello", "world", "!")` instead of `f({ 0:"hello", 1:"world", 2: "!" })`.
+
+**Option 2: specify argumentsOrder property**
+
+You can also use the parameter `?...&argumentsOrder=a,b,c,d` to call functions using all the parameters allowed by JavaScript.
 
 It will call the function spreading the specified properties in the specified order.
 
@@ -44,9 +54,20 @@ It will call the function spreading the specified properties in the specified or
 
 Apart from the querystring parameters, you can pass data, like objects and functions and whatever (no strings, I mean), with a second parameter on the `run` method.
 
+```js
+urlcommand.run("/path/to/somewhere?", {
+  "0": "hello",
+  "1": "world",
+  "2": "!"
+});
+```
 
+**5. Configurable callback for before and after a command**
 
-
+```js
+urlcommand.beforeRun(console.log);
+urlcommand.afterRun(console.log);
+```
 
 ## Usage
 
@@ -114,12 +135,21 @@ describe("URLCommand API Test", function (it) {
     ["/maths/sumatory?0=0&1=100&2=200&3=300", 600],
   ];
 
+  let counterBef = 0;
+  let counterAft = 0;
+  const increaseBef = () => counterBef++;
+  const increaseAft = () => counterAft++;
   for (let index = 0; index < urls.length; index++) {
     const [url, result, args = {}] = urls[index];
-    it("Can run: " + url, function () {
-      const output = URLCommand.from(handlers).run(url, args);
-      // console.log(output);
+    it("Can run: " + url, async function () {
+      const urlcommand = URLCommand.from(handlers);
+      urlcommand.beforeRun(increaseBef);
+      urlcommand.afterRun(increaseAft);
+      const output = urlcommand.run(url, args);
+      console.log("      output:", output);
       ensure({ output }).is(result);
+      ensure({ comparison: counterBef === counterAft }).is(true);
+      ensure({ counterBef }).isnt(0);
     });
   }
 });

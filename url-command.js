@@ -28,6 +28,19 @@
   };
   return {
     from: function (handlers) {
+      let beforeRun = undefined;
+      let afterRun = undefined;
+      const onRun = function(callback, args) {
+        let output = undefined;
+        if(typeof beforeRun === "function") {
+          beforeRun(...args);
+        }
+        output = callback(...args);
+        if(typeof afterRun === "function") {
+          afterRun(...args);
+        }
+        return output;
+      };
       const command = (url, queryParamsExtender = {}) => {
         if (!url) throw new Error("URL is required");
         if (typeof url !== "string") throw new Error("URL must be a string");
@@ -50,7 +63,7 @@
         }
         const isSpreadable = isOnlyConsecutiveNumbers(queryParams);
         if(isSpreadable && isSpreadable.length) {
-          return currentHandler(...isSpreadable);
+          return onRun(currentHandler, isSpreadable);
         } else if(queryParams.argumentsOrder) {
           const args = [];
           const argKeys = queryParams.argumentsOrder.split(",").map(arg => arg.trim());
@@ -59,12 +72,24 @@
             const argValue = queryParams[argKey] || null;
             args.push(argValue);
           }
-          return currentHandler(...args);
+          return onRun(currentHandler, args);
         } else {
-          return currentHandler(queryParams);
+          return onRun(currentHandler, [queryParams]);
         }
       };
       command.run = command;
+      command.beforeRun = function(callback) {
+        if(typeof callback !== "function") {
+          throw new Error("Required parameter «callback» to be a function on «beforeRun»");
+        }
+        beforeRun = callback;
+      };
+      command.afterRun = function(callback) {
+        if(typeof callback !== "function") {
+          throw new Error("Required parameter «callback» to be a function on «afterRun»");
+        }
+        afterRun = callback;
+      };
       return command;
     }
   };
