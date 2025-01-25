@@ -1,0 +1,12 @@
+{
+  "name": "@allnulled/url-command",
+  "version": "1.0.0",
+  "description": "Call functions through URL + Object.",
+  "main": "url-command.js",
+  "scripts": {
+    "test": "npx universal-tester test.js"
+  },
+  "keywords": [],
+  "author": "allnulled",
+  "license": "WTFPL"
+}
